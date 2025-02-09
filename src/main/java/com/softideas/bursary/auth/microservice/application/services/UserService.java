@@ -2,6 +2,7 @@ package com.softideas.bursary.auth.microservice.application.services;
 
 import com.softideas.bursary.auth.microservice.application.commands.user.CreateUserCommand;
 import com.softideas.bursary.auth.microservice.application.commands.user.UpdateUserCommand;
+import com.softideas.bursary.auth.microservice.domain.models.DTO.UserResponseDTO;
 import com.softideas.bursary.auth.microservice.domain.models.User;
 import com.softideas.bursary.auth.microservice.infrastructure.persistence.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +24,10 @@ public class UserService implements IUserService {
 
     @Transactional
     @Override
-    public User createUser(CreateUserCommand command) {
+    public UserResponseDTO createUser(CreateUserCommand command) {
 
 
         User user = User.addNewUser(
-
                 command.getFirstName(),
                 command.getMiddleName(),
                 command.getLastName(),
@@ -40,38 +40,82 @@ public class UserService implements IUserService {
                 command.getPhoneNumber(),
                 command.getGender(),
                 command.getPassword(),
-                command.getRoleId()
+                command.getRoleId(),
+                false
         );
 
-        return userRepository.save(user);
+        User savedUser= userRepository.save(user);
+
+        return new UserResponseDTO(
+                savedUser.getFirstName(),
+                savedUser.getMiddleName(),
+                savedUser.getLastName(),
+                savedUser.getAdmissionNumber(),
+                savedUser.getCourseName(),
+                savedUser.getCurrentYear()
+        );
     }
 
     @Override
-    public Optional<User> getUserById(String userId) {
-        return userRepository.findById(userId);
-    }
-
-    @Override
-    public Optional<User> getUserByEmailAddress(String emailAddress) {
-        return userRepository.findByEmailAddress(emailAddress);
-    }
-
-    @Transactional
-    @Override
-    public Optional<User> updateUser(String userId, UpdateUserCommand command) {
+    public Optional<UserResponseDTO> getUserById(String userId) {
 
         return userRepository.findById(userId)
-                .map(existingUser -> {
-                    existingUser.setFirstName(command.getFirstName());
-                    existingUser.setLastName(command.getLastName());
-                    existingUser.setEmailAddress(command.getEmailAddress());
-                    existingUser.setPhoneNumber(command.getPhoneNumber());
-                    return Optional.of(userRepository.save(existingUser));
-                })
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
 
+                .map(user -> new UserResponseDTO(
+                        user.getFirstName(),
+                        user.getMiddleName(),
+                        user.getLastName(),
+                        user.getAdmissionNumber(),
+                        user.getCourseName(),
+                        user.getCurrentYear()
+                ));
     }
 
+    @Override
+    public Optional<UserResponseDTO> getUserByEmailAddress(String emailAddress) {
+        return userRepository.findByEmailAddress(emailAddress)
+                .map(user -> new UserResponseDTO(
+                        user.getFirstName(),
+                        user.getMiddleName(),
+                        user.getLastName(),
+                        user.getAdmissionNumber(),
+                        user.getCourseName(),
+                        user.getCurrentYear()
+                ));
+    }
+    @Transactional
+    @Override
+    public UserResponseDTO updateUser(UpdateUserCommand command) {
+
+        return userRepository.findById(command.getUserId())
+                .map(existingUser -> {
+                    existingUser.setFirstName(command.getFirstName());
+                    existingUser.setMiddleName(command.getMiddleName());
+                    existingUser.setLastName(command.getLastName());
+                    existingUser.setEmailAddress(command.getEmailAddress());
+                    existingUser.setAdmissionNumber(command.getAdmissionNumber());
+                    existingUser.setDepartmentId(command.getDepartmentId());
+                    existingUser.setCourseName(command.getCourseName());
+                    existingUser.setCurrentYear(command.getCurrentYear());
+                    existingUser.setNationalIdentificationNumber(command.getNationalIdentificationNumber());
+                    existingUser.setPhoneNumber(command.getPhoneNumber());
+                    existingUser.setGender(command.getGender());
+                    existingUser.setPassword(command.getPassword());
+                    existingUser.setRoleId(command.getRoleId());
+
+                    User updatedUser = userRepository.save(existingUser);
+
+                    return new UserResponseDTO(
+                            updatedUser.getFirstName(),
+                            updatedUser.getMiddleName(),
+                            updatedUser.getLastName(),
+                            updatedUser.getAdmissionNumber(),
+                            updatedUser.getCourseName(),
+                            updatedUser.getCurrentYear()
+                    );
+                })
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + command.getUserId()));
+    }
     @Transactional
     @Override
     public void deleteUser(String userId) {

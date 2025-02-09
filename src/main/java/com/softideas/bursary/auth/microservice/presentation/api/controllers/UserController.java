@@ -4,6 +4,7 @@ import com.softideas.bursary.auth.microservice.application.commands.user.CreateU
 import com.softideas.bursary.auth.microservice.application.commands.user.UpdateUserCommand;
 import com.softideas.bursary.auth.microservice.domain.models.DTO.CreateUserDTO;
 import com.softideas.bursary.auth.microservice.domain.models.DTO.UpdateUserDTO;
+import com.softideas.bursary.auth.microservice.domain.models.DTO.UserResponseDTO;
 import com.softideas.bursary.auth.microservice.domain.models.User;
 import com.softideas.bursary.auth.microservice.infrastructure.services.IMediator;
 import jakarta.annotation.security.PermitAll;
@@ -22,6 +23,7 @@ public class UserController {
     public UserController(IMediator mediator) {
         this.mediator = mediator;
     }
+
     @PostMapping("/register")
     @PermitAll
     public ResponseEntity<?> createUser(@RequestBody CreateUserDTO createUserDTO) {
@@ -44,7 +46,21 @@ public class UserController {
             );
 
             User createdUser = mediator.send(command);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+
+            if (createdUser == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User could not be created.");
+            }
+
+            UserResponseDTO userResponseDTO = new UserResponseDTO(
+                    createdUser.getFirstName(),
+                    createdUser.getMiddleName(),
+                    createdUser.getLastName(),
+                    createdUser.getAdmissionNumber(),
+                    createdUser.getCourseName(),
+                    createdUser.getCurrentYear()
+            );
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(userResponseDTO);
 
         } catch (Exception e) {
 
@@ -52,11 +68,11 @@ public class UserController {
         }
     }
 
-    @PutMapping("updateProfiles/{userId}")
+    @PutMapping("/updateProfiles/{userId}")
     public ResponseEntity<?> updateUser(@PathVariable String userId, @RequestBody UpdateUserDTO updateUserDTO) {
         try {
-
             UpdateUserCommand command = new UpdateUserCommand(
+                    userId,
                     updateUserDTO.getFirstName(),
                     updateUserDTO.getMiddleName(),
                     updateUserDTO.getLastName(),
@@ -75,7 +91,22 @@ public class UserController {
 
             User updatedUser = mediator.send(command);
 
-            return ResponseEntity.ok(updatedUser);
+            if (updatedUser == null) {
+
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+            }
+
+            UserResponseDTO userResponseDTO = new UserResponseDTO(
+
+                    updatedUser.getFirstName(),
+                    updatedUser.getMiddleName(),
+                    updatedUser.getLastName(),
+                    updatedUser.getAdmissionNumber(),
+                    updatedUser.getCourseName(),
+                    updatedUser.getCurrentYear()
+            );
+
+            return ResponseEntity.ok(userResponseDTO);
 
         } catch (Exception e) {
 

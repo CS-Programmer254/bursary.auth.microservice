@@ -42,9 +42,6 @@ public class User {
     @Column(name = "current_year", length = 10)
     private String currentYear;
 
-    @Column(name = "course", length = 100)
-    private String course;
-
     @Column(name = "national_identification_number", length = 15, nullable = false, unique = true)
     private int nationalIdentificationNumber;
 
@@ -60,6 +57,9 @@ public class User {
     @Column(name = "role_id", length = 36, nullable = false)
     private String roleId;
 
+    @Column(name = "is_Verified",nullable = false)
+    private boolean isVerified;
+
     public User(
             String firstName,
             String middleName,
@@ -73,7 +73,8 @@ public class User {
             String phoneNumber,
             String gender,
             String password,
-            String roleId)
+            String roleId,
+            boolean isVerified)
     {
         this.userId = UUID.randomUUID().toString();
         this.firstName = firstName;
@@ -89,6 +90,7 @@ public class User {
         this.gender = gender;
         this.password = password;
         this.roleId = roleId;
+        this.isVerified=isVerified;
     }
     public static User addNewUser(
             String firstName,
@@ -103,12 +105,24 @@ public class User {
             String phoneNumber,
             String gender,
             String password,
-            String roleId) {
+            String roleId,
+            boolean isVerified) {
 
         return new User(
-                firstName, middleName, lastName, emailAddress,
-                admissionNumber, departmentId, courseName, currentYear,
-                nationalIdentificationNumber, phoneNumber, gender, password, roleId
+                firstName,
+                middleName,
+                lastName,
+                emailAddress,
+                admissionNumber,
+                departmentId,
+                courseName,
+                currentYear,
+                nationalIdentificationNumber,
+                phoneNumber,
+                gender,
+                password,
+                roleId,
+                isVerified
         );
     }
 }

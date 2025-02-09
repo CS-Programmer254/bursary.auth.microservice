@@ -1,6 +1,6 @@
 package com.softideas.bursary.auth.microservice.application.handlers.user;
 
-import com.softideas.bursary.auth.microservice.application.commands.user.CreateUserCommand;
+import com.softideas.bursary.auth.microservice.application.commands.user.UpdateUserCommand;
 import com.softideas.bursary.auth.microservice.application.handlers.IRequestHandler;
 import com.softideas.bursary.auth.microservice.application.services.IUserService;
 import com.softideas.bursary.auth.microservice.domain.models.DTO.UserResponseDTO;
@@ -9,24 +9,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CreateUserCommandHandler implements IRequestHandler<CreateUserCommand, UserResponseDTO> {
+public class UpdateUserCommandHandler implements IRequestHandler<UpdateUserCommand, UserResponseDTO> {
 
     private final IUserService userService;
 
     @Autowired
-    public CreateUserCommandHandler(IUserService userService) {
+    public UpdateUserCommandHandler(IUserService userService) {
 
         this.userService = userService;
     }
+
     @Override
-    public UserResponseDTO handle(CreateUserCommand command) {
+    public UserResponseDTO handle(UpdateUserCommand command) {
 
-        return userService.createUser(command);
-
+        return userService.updateUser(command);
     }
 
     @Override
     public Class<?> getCommandType() {
-        return CreateUserCommand.class;
+        return UpdateUserCommand.class;
     }
 }

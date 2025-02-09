@@ -18,17 +18,17 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
-                       // .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
-                        //.requestMatchers(HttpMethod.GET, "/api/v1/auth/users/login").permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/users/register").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/auth/users/updateProfiles/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless sessions for JWT
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .httpBasic(httpBasic -> httpBasic.disable()); // Disable basic HTTP authentication (if needed)
+                .httpBasic(httpBasic -> httpBasic.disable());
 
-        return http.getOrBuild(); // Use getOrBuild instead of build in Spring Security 6.x
+        return http.getOrBuild();
     }
 
 

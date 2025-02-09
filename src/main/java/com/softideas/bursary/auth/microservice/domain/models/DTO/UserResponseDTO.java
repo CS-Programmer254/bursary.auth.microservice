@@ -1,22 +1,15 @@
 package com.softideas.bursary.auth.microservice.domain.models.DTO;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-public class UpdateUserDTO {
-
+@AllArgsConstructor
+public class UserResponseDTO {
     private String firstName;
     private String middleName;
     private String lastName;
-    private String emailAddress;
     private String admissionNumber;
-    private String departmentId;
     private String courseName;
     private String currentYear;
-    private String course;
-    private int nationalIdentificationNumber;
-    private String phoneNumber;
-    private String gender;
-    private String password;
-    private String roleId;
 }
