@@ -4,7 +4,12 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -12,11 +17,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Table(name = "user")
-public class User {
+public class User implements UserDetails {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_id", length = 36, nullable = false, unique = true)
-    private String userId;
+    private UUID userId;
 
     @Column(name = "first_name", length = 50, nullable = false)
     private String firstName;
@@ -54,8 +60,10 @@ public class User {
     @Column(name = "password", length = 255, nullable = false)
     private String password;
 
-    @Column(name = "role_id", length = 36, nullable = false)
-    private String roleId;
+
+    @Column(name = "role", length =10, nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private Role role;
 
     @Column(name = "is_Verified",nullable = false)
     private boolean isVerified;
@@ -73,10 +81,10 @@ public class User {
             String phoneNumber,
             String gender,
             String password,
-            String roleId,
+            Role role,
             boolean isVerified)
     {
-        this.userId = UUID.randomUUID().toString();
+        this.userId = UUID.randomUUID();
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
@@ -89,7 +97,7 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.gender = gender;
         this.password = password;
-        this.roleId = roleId;
+        this.role = role;
         this.isVerified=isVerified;
     }
     public static User addNewUser(
@@ -105,8 +113,8 @@ public class User {
             String phoneNumber,
             String gender,
             String password,
-            String roleId,
-            boolean isVerified) {
+            Role role,
+            Boolean isVerified) {
 
         return new User(
                 firstName,
@@ -121,8 +129,37 @@ public class User {
                 phoneNumber,
                 gender,
                 password,
-                roleId,
+                role,
                 isVerified
         );
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(getRole().name()));
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+    @Override
+    public boolean isCredentialsNonExpired() {
+
+        return true;
+    }
+    @Override
+    public boolean isEnabled() {
+
+        return getIsVerified();
+    }
+    @Override
+    public String getUsername() {
+
+        return getFirstName().concat(" ")+ getLastName() ;
     }
 }
