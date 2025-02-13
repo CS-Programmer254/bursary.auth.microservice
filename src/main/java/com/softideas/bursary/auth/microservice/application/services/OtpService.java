@@ -24,23 +24,16 @@ public class OtpService {
     private UserRepository userRepository;
     private static final Logger logger = LoggerFactory.getLogger(OtpService.class);
 
-//    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int OTP_LENGTH = 6;
-//    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
-//
-//
-//
-//    public String generateOtp() {
-//        StringBuilder otp = new StringBuilder(OTP_LENGTH);
-//        for (int i = 0; i < OTP_LENGTH; i++) {
-//            otp.append(CHARACTERS.charAt(SECURE_RANDOM.nextInt(CHARACTERS.length())));
-//        }
-//        System.out.println("Generated OTP: " + otp);
-//        return otp.toString();
-//    }
 
     public String generateOtp() {
-        return RandomStringUtils.randomAlphanumeric(OTP_LENGTH);
+
+        String otp = RandomStringUtils.randomAlphanumeric(OTP_LENGTH);
+
+        logger.info("Generated OTP: {}", otp);
+
+        return otp;
+
     }
 
     @Retryable(value = {OptimisticLockException.class}, include = TimeoutException.class, exclude = IllegalArgumentException.class ,maxAttempts = 5, backoff = @Backoff(delay = 1000, multiplier = 2))
