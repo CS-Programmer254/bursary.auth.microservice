@@ -1,5 +1,6 @@
 package com.softideas.bursary.auth.microservice.domain.models.DTO;
 
+import com.softideas.bursary.auth.microservice.domain.models.Role;
 import lombok.Data;
 
 @Data
@@ -14,9 +15,9 @@ public class CreateUserDTO {
     private String courseName;
     private String currentYear;
     private String course;
-    private int nationalIdentificationNumber;
+    private  String nationalIdentificationNumber;
     private String phoneNumber;
     private String gender;
     private String password;
-    private String roleId;
+    private Role role;
 }

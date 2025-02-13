@@ -1,5 +1,6 @@
 package com.softideas.bursary.auth.microservice.application.commands.user;
 
+import com.softideas.bursary.auth.microservice.domain.models.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,9 +19,9 @@ public class CreateUserCommand {
     private String courseName;
     private String currentYear;
     private String course;
-    private int nationalIdentificationNumber;
+    private String nationalIdentificationNumber;
     private String phoneNumber;
     private String gender;
     private String password;
-    private String roleId;
+    private Role role;
 }
