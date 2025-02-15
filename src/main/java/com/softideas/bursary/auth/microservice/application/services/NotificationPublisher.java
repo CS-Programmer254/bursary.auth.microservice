@@ -18,22 +18,9 @@ public class NotificationPublisher {
 
         this.rabbitTemplate = rabbitTemplate;
     }
-    public void publish (UserCreatedEvent message,String exchangeName,String routingKey) {
 
-        rabbitTemplate.convertAndSend(exchangeName, RabbitMQConfig.EMAIL_ROUTING_KEY, message);
-
+    public <T> void publish(T message, String exchangeName, String routingKey) {
+        rabbitTemplate.convertAndSend(exchangeName, routingKey, message);
     }
 
-
-//    public void sendEmailNotification(EmailNotificationEvent message) {
-//
-//        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.EMAIL_ROUTING_KEY, message);
-//
-//    }
-//
-//    public void sendSmsNotification(SmsNotificationEvent message) {
-//
-//        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.SMS_ROUTING_KEY, message);
-//
-//    }
 }
