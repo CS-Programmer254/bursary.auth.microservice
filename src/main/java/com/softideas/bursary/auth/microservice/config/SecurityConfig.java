@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/register", "/api/v1/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/auth/users/updateProfiles/**").hasAuthority("ROLE_USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/auth/users/updateProfiles/**").hasAuthority("ROLE_STUDENT")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

@@ -56,6 +56,7 @@ public class OtpService {
 
             user.setOtp(null);
             user.setOtpExpiryTime(null);
+            user.setIsVerified(true);
 
             userRepository.save(user);
             return true;

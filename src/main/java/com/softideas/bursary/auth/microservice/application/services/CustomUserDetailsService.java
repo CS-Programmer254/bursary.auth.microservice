@@ -2,6 +2,7 @@ package com.softideas.bursary.auth.microservice.application.services;
 
 import com.softideas.bursary.auth.microservice.application.commands.user.CreateUserCommand;
 import com.softideas.bursary.auth.microservice.application.commands.user.UpdateUserCommand;
+import com.softideas.bursary.auth.microservice.contracts.UserCreatedEvent;
 import com.softideas.bursary.auth.microservice.domain.models.DTO.UserResponseDTO;
 import com.softideas.bursary.auth.microservice.domain.models.User;
 import com.softideas.bursary.auth.microservice.infrastructure.persistence.UserRepository;
@@ -12,6 +13,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,6 +29,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
     private   OtpService otpService;
+
+    @Autowired
+    private NotificationPublisher notificationPublisher;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -73,9 +79,21 @@ public class CustomUserDetailsService implements UserDetailsService {
         );
 
         user.setOtp(otpService.generateOtp());
-        user.setOtpExpiryTime();
+
+        user.setOtpExpiryTime(LocalDateTime.now().plusMinutes(60));
 
         User savedUser = userRepository.save(user);
+
+        UserCreatedEvent otpMessage = new UserCreatedEvent(
+
+                savedUser.getFirstName(),
+                savedUser.getEmailAddress(),
+                savedUser.getPhoneNumber(),
+                savedUser.getOtp()
+
+        );
+
+        notificationPublisher.publish(otpMessage,"","");
 
         return new UserResponseDTO(
                 savedUser.getFirstName(),
@@ -93,7 +111,12 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     public boolean verifyOtp(String phoneNumber, String otp) {
 
-        return otpService.verifyAndConsumeOtp(phoneNumber, otp);
+        otpService.verifyAndConsumeOtp(phoneNumber, otp);
+
+        User existingUser = userRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new RuntimeException("User not found with phone number: " + phoneNumber));
+
+        return existingUser.isEnabled();
     }
 
 

@@ -22,7 +22,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "user_id", length = 36, nullable = false, unique = true)
+    @Column(name = "user_id", nullable = false, unique = true)
     private UUID userId;
 
     @NotNull
@@ -82,6 +82,7 @@ public class User implements UserDetails {
     @Column(name = "otp", length = 6)
     private String otp;
 
+    @Setter
     @Column(name = "otp_expiry_time")
     private LocalDateTime otpExpiryTime;
 
@@ -106,7 +107,6 @@ public class User implements UserDetails {
             Role role,
             Boolean isVerified)
     {
-        this.userId = UUID.randomUUID();
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
@@ -183,10 +183,6 @@ public class User implements UserDetails {
     public String getUsername() {
 
         return getPhoneNumber();
-    }
-
-    public void setOtpExpiryTime() {
-        this.otpExpiryTime = LocalDateTime.now().plusMinutes(60);
     }
 
 }
