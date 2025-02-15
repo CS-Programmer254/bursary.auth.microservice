@@ -1,54 +1,46 @@
 package com.softideas.bursary.auth.microservice.config;
 
-import org.springframework.amqp.core.TopicExchange;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
-
+import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
 
-    public static final String EXCHANGE_NAME = "notification.exchange";
-    public static final String EMAIL_QUEUE = "email.queue";
-    public static final String SMS_QUEUE = "sms.queue";
-    public static final String EMAIL_ROUTING_KEY = "notification.email";
-    public static final String SMS_ROUTING_KEY = "notification.sms";
+    public static final String USER_CREATED_EXCHANGE_NAME = "Sms.Notification.Exchange";
+
+    public static final String USER_CREATED_ROUTING_KEY = "User.Created.Routing.Key";
+
+    public static final String USER_CREATED_QUEUE = "User.Created.Event.Queue";
 
     @Bean
-    public TopicExchange topicExchange() {
+    public TopicExchange userCreatedExchange() {
 
-        return new TopicExchange(EXCHANGE_NAME);
+        return new TopicExchange(USER_CREATED_EXCHANGE_NAME, true, false);
 
     }
 
     @Bean
-    public Queue emailQueue() {
+    public Queue userCreatedQueue() {
 
-        return new Queue(EMAIL_QUEUE, false);
-
-    }
-
-    @Bean
-    public Queue smsQueue() {
-
-        return new Queue(SMS_QUEUE, false);
+        return new Queue(USER_CREATED_QUEUE, true, false, false);
 
     }
 
     @Bean
-    public Binding emailBinding(Queue emailQueue, TopicExchange topicExchange) {
+    public Binding userCreatedBinding(Queue userCreatedQueue, TopicExchange userCreatedExchange) {
 
-        return BindingBuilder.bind(emailQueue).to(topicExchange).with(EMAIL_ROUTING_KEY);
-
+        return BindingBuilder.bind(userCreatedQueue).to(userCreatedExchange).with(USER_CREATED_ROUTING_KEY);
     }
 
     @Bean
-    public Binding smsBinding(Queue smsQueue, TopicExchange topicExchange) {
+    public RabbitAdmin rabbitAdmin(org.springframework.amqp.rabbit.connection.ConnectionFactory connectionFactory) {
 
-        return BindingBuilder.bind(smsQueue).to(topicExchange).with(SMS_ROUTING_KEY);
+        return new RabbitAdmin(connectionFactory);
 
     }
 }

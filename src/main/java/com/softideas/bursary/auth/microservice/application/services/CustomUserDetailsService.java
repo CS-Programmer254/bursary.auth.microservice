@@ -2,6 +2,7 @@ package com.softideas.bursary.auth.microservice.application.services;
 
 import com.softideas.bursary.auth.microservice.application.commands.user.CreateUserCommand;
 import com.softideas.bursary.auth.microservice.application.commands.user.UpdateUserCommand;
+import com.softideas.bursary.auth.microservice.config.RabbitMQConfig;
 import com.softideas.bursary.auth.microservice.contracts.UserCreatedEvent;
 import com.softideas.bursary.auth.microservice.domain.models.DTO.UserResponseDTO;
 import com.softideas.bursary.auth.microservice.domain.models.User;
@@ -14,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,7 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private   OtpService otpService;
 
     @Autowired
-    private NotificationPublisher notificationPublisher;
+    private MessageBrokerService messageBroker;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -93,7 +93,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         );
 
-        notificationPublisher.publish(otpMessage,"","");
+        messageBroker.publish(otpMessage,RabbitMQConfig.USER_CREATED_EXCHANGE_NAME,RabbitMQConfig.USER_CREATED_ROUTING_KEY, RabbitMQConfig.USER_CREATED_QUEUE);
 
         return new UserResponseDTO(
                 savedUser.getFirstName(),
