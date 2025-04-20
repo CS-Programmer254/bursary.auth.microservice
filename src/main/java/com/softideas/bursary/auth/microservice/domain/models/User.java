@@ -18,6 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Table(name = "user")
+
 public class User implements UserDetails {
 
     @Id
@@ -41,6 +42,7 @@ public class User implements UserDetails {
     @Column(name = "email_address", length = 100, nullable = false, unique = true)
     private String emailAddress;
 
+    @NotNull
     @Column(name = "admission_number", length = 20, unique = true)
     private String admissionNumber;
 

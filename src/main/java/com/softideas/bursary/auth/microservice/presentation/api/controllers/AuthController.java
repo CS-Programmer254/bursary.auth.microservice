@@ -4,6 +4,7 @@ import com.softideas.bursary.auth.microservice.application.commands.user.CreateU
 import com.softideas.bursary.auth.microservice.application.commands.user.UpdateUserCommand;
 import com.softideas.bursary.auth.microservice.application.services.CustomUserDetailsService;
 import com.softideas.bursary.auth.microservice.domain.models.DTO.*;
+import com.softideas.bursary.auth.microservice.domain.models.Role;
 import com.softideas.bursary.auth.microservice.domain.models.User;
 import com.softideas.bursary.auth.microservice.infrastructure.services.IMediator;
 import jakarta.annotation.security.PermitAll;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+//@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/v1/auth/")
 public class AuthController {
@@ -87,7 +89,7 @@ public class AuthController {
 
             String jwt = userService.generateAuthToken(userDetails);
 
-            return ResponseEntity.ok(new LoginResponseDTO(jwt, userDetails.getFirstName() + " logged in successfully"));
+            return ResponseEntity.ok(new LoginResponseDTO(jwt, userDetails.getFirstName()+" "+ userDetails.getLastName(), userDetails.getPhoneNumber(),userDetails.getEmailAddress(),userDetails.getNationalIdentificationNumber(), userDetails.getRole()));
 
         } catch (UsernameNotFoundException e) {
 
@@ -149,4 +151,35 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating user: " + e.getMessage());
         }
     }
+
+    @PostMapping("/validate-token")
+    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Missing or invalid Authorization header");
+            }
+
+            String token = authorizationHeader.substring(7);
+
+            String username = userService.extractUsername(token);
+
+            User userDetails =  (User) userService.loadUserByUsername(username);
+
+            boolean isValid = userService.validateAuthToken(token,userDetails);
+
+            if (isValid) {
+
+                return ResponseEntity.ok(new ValidateTokenResponseDTO(username, "Token is valid"));
+
+            } else {
+
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token.");
+            }
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error validating token: " + e.getMessage());
+        }
+    }
+
 }

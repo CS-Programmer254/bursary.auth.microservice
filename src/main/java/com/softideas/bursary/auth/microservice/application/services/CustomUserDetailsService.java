@@ -57,6 +57,11 @@ public class CustomUserDetailsService implements UserDetailsService {
       return  jwtService.validateToken(token,userDetails);
     }
 
+    public String extractUsername(String token) {
+
+        return jwtService.extractUsername(token);
+    }
+
     public UserResponseDTO createUser(CreateUserCommand createUserCommand) {
 
         String hashedPassword = passwordEncoder.encode(createUserCommand.getPassword());

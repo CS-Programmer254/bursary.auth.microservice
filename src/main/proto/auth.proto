@@ -1,0 +1,31 @@
+syntax = "proto3";
+option java_multiple_files = true;
+option java_package = "com.softideas.bursary.auth.microservice.grpc";
+option java_outer_classname = "AuthProto";
+
+
+service AuthService {
+
+    rpc GetUser (UserRequest) returns (UserResponse);
+}
+
+message UserRequest {
+
+    string PhoneNumber = 1;
+}
+
+message UserResponse {
+    string UserId = 1;
+    string FirstName = 2;
+    string MiddleName = 3;
+    string LastName = 4;
+    string EmailAddress = 5;
+    string AdmissionNumber = 6;
+    string NationalIdentificationNumber = 7;
+    string SchoolName = 8;
+    string DepartmentName = 9;
+    string EnrolledCourse = 10;
+    string YearOfStudy = 11;
+    string SponsorshipType = 12;
+    string County = 13;
+}

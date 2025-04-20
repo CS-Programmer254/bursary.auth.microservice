@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -16,24 +17,15 @@ import java.time.LocalDateTime;
 public class UserCreatedEvent implements Serializable {
 
     private String firstName;
-
     private String emailAddress;
-
     private String phoneNumber;
-
     private String otp;
-
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public UserCreatedEvent(@NotNull String firstName, @NotNull @Email String emailAddress, @NotNull String phoneNumber, String otp) {
-
-        this.firstName=firstName;
-
-        this.emailAddress=emailAddress;
-
-        this.phoneNumber=phoneNumber;
-
-        this.otp =otp;
-
+        this.firstName = firstName;
+        this.emailAddress = emailAddress;
+        this.phoneNumber = phoneNumber;
+        this.otp = otp;
     }
 }
